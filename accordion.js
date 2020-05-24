@@ -1,167 +1,148 @@
 'use strict';
 
-// アコーディオンメニューの定数
-const AcdMenuConst = {
-	STR_TRIGGER:	"js-acd_trigger",
-	STR_TARGET:		"js-acd_target",
-	STR_DATASET:	"acdId"
-}
+var JsAcdMenu = JsAcdMenu || {};
 
-// アコーディオンメニューの管理オブジェクト
-const AcdMenu = function(){
-	
-	// トリガー要素と開閉対象をセットにしたオブジェクト
-	this.allAcdMenu = [];
-	
+JsAcdMenu.defaultConf = {
+	isAllOpen: true,		// true：全てオープン、false：data-acd-openが"true"の要素のみオープン
+	transition: "all 0.5s ease 0s"
 };
 
-// アコーディオンメニューのプロトタイプ設定
-AcdMenu.prototype = {
+(function(){
 	
-	// 初期化処理
-	init:			function(){
-						// トリガーと開閉対象となる要素を全て取得
-						const triggers = document.getElementsByClassName(AcdMenuConst.STR_TRIGGER);
-						const targets = document.getElementsByClassName(AcdMenuConst.STR_TARGET);
-						
-						// 要素の数が合わなければ、エラーを返して、処理を中断する
-						if(triggers.length != targets.length){
-							return false;
-						}
-						
-						// 各トリガーを基準に、それぞれの識別IDを取得する
-						let triggerId = [];
-						let targetId = [];
-						
-						
-						for(let i = 0, ilen = triggers.length; i < ilen; i++){
-							triggerId[i] = triggers[i].dataset[AcdMenuConst.STR_DATASET];
-							targetId[i] = targets[i].dataset[AcdMenuConst.STR_DATASET];
-							
-							let height = 0;
-							let trigger = null;
-							let target = null;
-							let display = "";
-							
-							// 識別IDが合わないものに関しては、デフォルトで、次の隣要素を開閉対象とする
-							if(triggerId[i] != targetId[i]){
-								
-								// 高さを計算
-								trigger = triggers[i];
-								target = triggers[i].nextElementSiblings;
-								display = target.style.display;
-								height = this.calcHeightByClone(triggers[i].nextElementSiblings, display);
-							}else{
-								
-								// 高さを計算
-								trigger = triggers[i];
-								target = targets[i];
-								display = target.style.display;
-								height = this.calcHeightByClone(targets[i], display);
-							}
-							// アコーディオンメニューに必要なデータを詰め込んだオブジェクト
-							this.allAcdMenu[triggerId[i]] = {
-																"trigger": trigger, 
-																"target": target, 
-																"targetH": height, 
-																"display": display};
-							
-							// トリガー要素にイベントを付与していく
-							this.addClickEvent(trigger, this.tglAcdMenu);
-						}
-						
-						
-						
-						return true;
-					},
+	const _am = JsAcdMenu;
 	
-	// トリガー要素に、クリックイベントを付与する
-	addClickEvent:	function(applyObj, fnc){
-						
-						let self = this;
-						
-						applyObj.addEventListener('click', function(){
-							fnc(applyObj, self);
-						}, false);
-						
-					},
-	
-	// アコーディオンの開閉を処理する
-	tglAcdMenu:		function(eventTarget, self){
-						
-						let targetBox = self.allAcdMenu[eventTarget.dataset[AcdMenuConst.STR_DATASET]]["target"];
-						let targetBoxH = self.allAcdMenu[eventTarget.dataset[AcdMenuConst.STR_DATASET]]["targetH"];
-						let display = self.allAcdMenu[eventTarget.dataset[AcdMenuConst.STR_DATASET]]["display"];
-						
-						if(targetBox.offsetHeight <= 0){
-							targetBox.style.display = display;
-							self.slideDown(targetBox, targetBoxH);
-						}else{
-							self.slideUp(targetBox, targetBoxH);
-						}
-					},
-					
-	// スライドダウン処理
-	slideDown:		function(targetBox, targetBoxH){
-						
-						let self = this;
-						
-						let slideNum = targetBoxH/400;
-						
-						if(targetBox.offsetHeight < targetBoxH){
-							let trgBoxH = targetBox.offsetHeight + slideNum;
-							targetBox.style.height = trgBoxH + "px";
-							AcdMenuMediator.registerTimer(setTimeout(function(){self.slideDown(targetBox, targetBoxH);},3));
-						}else{
-							AcdMenuMediator.clearTimer();
-							targetBox.style.height = targetBoxH + "px";
-						}
-					},
-	
-	// スライドアップ処理
-	slideUp:		function(targetBox, targetBoxH){
-						
-						let self = this;
-						
-						let slideNum = targetBoxH/20;
-						
-						if(targetBox.offsetHeight >= slideNum){
-							let trgBoxH = targetBox.offsetHeight - slideNum;
-							targetBox.style.height = trgBoxH + "px";
-							AcdMenuMediator.registerTimer(setTimeout(function(){self.slideUp(targetBox, targetBoxH);},3));
-						}else{
-							AcdMenuMediator.clearTimer();
-							targetBox.style.height = 0;
-							targetBox.style.display = "none";
-						}
-					},
-	// スライド処理をするために必要なこと
-	// 高さを取得するため
-	// styleのheightはとれないため、windowオブジェクトに備わるメソッドを使用
-	calcHeightByClone:	function(elm, display){
-							let copyTarget = elm.cloneNode(true);
-							copyTarget.style.cssText = "display: " + display + "; height: auto; visibility: hidden;";
-							elm.parentNode.appendChild(copyTarget);
-							let targetHeight = window.getComputedStyle(copyTarget).height.replace("px","");
-							elm.parentNode.removeChild(copyTarget);
-							return targetHeight;
-						}
-}
+	// アコーディオンメニューの定数
+	const AcdMenuConst = {
+		CLASS_TRIGGER:	"js-acd_trigger",
+		CLASS_TARGET:		"js-acd_target",
+		DS_ACD_ID:	"acdId",
+		DS_ACD_OPEN:	"acdOpen"	// true or other
+	}
 
-var AcdMenuMediator = {
-	
-	timer:	null,
-	
-	registerTimer:		function(timer){
-							if(this.timer == null){
+	// アコーディオンメニューの管理オブジェクト
+	_am.AcdMenu = function(){
+		
+		// トリガー要素と開閉対象をセットにしたオブジェクト
+		this.allAcdMenu = [];
+		
+	};
+
+	// アコーディオンメニューのプロトタイプ設定
+	_am.AcdMenu.prototype = {
+		
+		// 初期化処理
+		init:			function(){
+							
+							// トリガーと開閉対象となる要素を全て取得
+							const triggers = document.getElementsByClassName(AcdMenuConst.CLASS_TRIGGER);
+							const targets = document.getElementsByClassName(AcdMenuConst.CLASS_TARGET);
+							
+							// 要素の数が合わなければ、エラーを返して、処理を中断する
+							if(triggers.length != targets.length){
+								console.log("トリガーと開閉対象の要素数が合いません。");
 								return false;
 							}
 							
-							this.timer = timer;
+							let triggerId = '';
+							let targetId = '';
+							let isDefaultOpen = '';
+							
+							for(let i = 0, ilen = triggers.length; i < ilen; i++){
+							
+								// トリガー要素と開閉対象要素のdatasetを取得する
+								triggerId = triggers[i].dataset[AcdMenuConst.DS_ACD_ID];
+								targetId = targets[i].dataset[AcdMenuConst.DS_ACD_ID];
+								isDefaultOpen = targets[i].dataset[AcdMenuConst.DS_ACD_OPEN] || false;
+								
+								// デフォルトのI （例：acd_0）
+								let acdId = 'acd_' + i;
+								
+								// 要素の各設定値
+								let height = 0;
+								let trigger = null;
+								let target = null;
+								
+								// トリガーオブジェクトを設定
+								trigger = triggers[i];
+								
+								// 識別IDが合わないものに関しては、デフォルトで、次の隣要素を開閉対象とする
+								if(triggerId != targetId || typeof(triggerId) === 'undefined' || typeof(targetId) === 'undefined' ){
+									
+									trigger.dataset[AcdMenuConst.DS_ACD_ID] = acdId;
+									// 開閉対象オブジェクトを設定
+									target = trigger.nextElementSibling;
+									target.dataset[AcdMenuConst.DS_ACD_ID] = acdId;
+									
+								}else{
+									
+									// アコーディオンメニューオブジェクトのIDを設定する
+									acdId = triggerId;
+									target = targets[i];
+									
+								}
+								
+								// 高さの計算
+								target.style.height = "auto";
+								height = window.getComputedStyle(target).height.replace("px","");
+								
+								// アコーディオンメニューに必要なデータを詰めたオブジェクト
+								this.allAcdMenu[acdId] = {
+																	"trigger": trigger, 
+																	"target": target, 
+																	"targetH": height
+															};
+								
+								// 開閉対象のスタイルを設定する
+								target.style.overflow = "hidden";
+								target.style.transition = _am.defaultConf.transition;
+								
+								// デフォルト設定が、全て開く設定 or datasetの値が開く設定の場合のみ、heightを設定
+								if(_am.defaultConf.isAllOpen === true || isDefaultOpen === "true"){
+									target.style.height = height + "px";
+									target.dataset[AcdMenuConst.DS_ACD_OPEN] = "true";
+								}else{
+									target.style.height = "0px";
+								}
+								
+								// トリガー要素にイベントを付与していく
+								this.addClickEvent(trigger, this.toggleMenu);
+								
+							}
+							
+							return true;
 						},
-						
-	clearTimer:			function(timer){
-							clearTimeout(timer);
-							this.timer = null;
+		
+		// トリガー要素に、クリックイベントを付与する
+		addClickEvent:	function(applyObj, fnc){
+							
+							let self = this;
+							
+							applyObj.addEventListener('click', function(){
+								fnc(applyObj, self);
+							}, false);
+							
+						},
+		
+		// アコーディオンの開閉を処理する
+		toggleMenu:		function(eventTarget, self){
+							
+							let targetBox = self.allAcdMenu[eventTarget.dataset[AcdMenuConst.DS_ACD_ID]]["target"];
+							let targetBoxH = self.allAcdMenu[eventTarget.dataset[AcdMenuConst.DS_ACD_ID]]["targetH"];
+							
+							if(targetBox.dataset[AcdMenuConst.DS_ACD_OPEN] === "true"){
+								targetBox.style.height = "0px";
+								targetBox.dataset[AcdMenuConst.DS_ACD_OPEN] = "false";
+								
+							}else{
+								targetBox.style.height = targetBoxH + "px";
+								targetBox.dataset[AcdMenuConst.DS_ACD_OPEN] = "true";
+							}
 						}
-}
+		}
+		
+		window.addEventListener('DOMContentLoaded', function(){
+		new _am.AcdMenu().init();
+		},false);
+		
+}(this));
+
