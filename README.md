@@ -1,44 +1,48 @@
 # JsAcdMenu
-Javascript�̗��K�����˂āA�A�R�[�f�B�I�����j���[��Javascript�����ō쐬���Ă݂܂����B
+Javascriptの練習も兼ねて、アコーディオンメニューをJavascriptだけで作成してみました。
 
-# �����
-- �u���E�U�FGoogle Chrome, Microsoft Edge(Chromium)
-- OS�FWindows10
+# 動作環境
+- ブラウザ：Google Chrome, Microsoft Edge(Chromium)
+- OS：Windows10
 
-# �g�p���@
-���L�ݒ��������ŁA����js�t�@�C����HTML�t�@�C���ɓǂݍ��݂܂��B
-�ݒ肷��t�@�C���͎�ɁA�A�R�[�f�B�I�����j���[����������HTML�ƁAaccordion.js�ł��B
+# 使用方法
+下記設定をした上で、このjsファイルをHTMLファイルに読み込みます。
+設定するファイルは主に、アコーディオンメニューを実装するHTMLと、accordion.jsです。
 
-### �P�DHTML
-- ���j���[�̊J�̃g���K�[�ƂȂ�v�f��class�ɁAjs-acd_trigger��ݒ肷��B
-- ���j���[�̊J�ΏۂƂȂ�v�f��class�ɁAjs-acd_target��ݒ肷��B
-- ���j���[�̃g���K�[�ƁA�J�Ώۂ�R�t���邽�߂�dataset������ݒ肵�܂��B
-> data-acd-id=[...]
-���ݒ肵�Ă��Ȃ��Ă��\�ł��B�ݒ肵�Ȃ������ꍇ�́A�g���K�[�̎��חv�f���J�ΏۂƂȂ�܂��B
-- ������ԂŃI�[�v���ɂ��Ă��������v�f�̂݁Adataset������ݒ肵�܂��B
-> data-acd-open="true"
-> �ijs�̕��ŁA�f�t�H���g�őS�ĊJ������Ԃɂ��邱�Ƃ��ł��܂��B�j
+### １．HTML
+- メニューの開閉のトリガーとなる要素のclassに、js-acd_triggerを設定する。
+- メニューの開閉対象となる要素のclassに、js-acd_targetを設定する。
+- メニューのトリガーと、開閉対象を紐付けるためのdataset属性を設定します。
+> #### ID設定方法　
+> data-acd-id=[...]  
+> ※設定していなくても可能です。設定しなかった場合は、トリガーの次隣要素が開閉対象となります。
+- 初期状態でオープンにしておきたい要素のみ、dataset属性を設定します。
+> #### デフォルトオープン設定方法
+> data-acd-open="true"  
+> ※jsファイルの方で、デフォルトで全て開いた状態にすることもできます。
 
-### �Q�Daccordion.js
-JsAcdMenu.defaultConf�Ƃ����I�u�W�F�N�g�̒��ŁA�ȉ���ݒ肵�܂��B
-- isAllOpen�v���p�e�B�Ftrue��ݒ肷��ƁA������ԂőS�ăI�[�v���ɂȂ�܂��Bfalse�ł́Adata-acd-open��"true"�̗v�f�̂݃I�[�v�����܂��B
-- transition�v���p�e�B�F�J���鎞��transition��ݒ肵�܂��B�i������Ԃł́A"all 0.5s ease 0s"�ƂȂ��Ă��܂��B�j
+### ２．accordion.js
+JsAcdMenu.defaultConfというオブジェクトの中で、以下を設定します。
+- isAllOpenプロパティ：  
+    trueを設定すると、初期状態で全てオープンになります。falseでは、data-acd-openが"true"の要素のみオープンします。
+- transitionプロパティ：  
+    開閉する時のtransitionを設定します。（初期状態では、"all 0.5s ease 0s"となっています。）
 
-# ����
-### �P�D�ȉ��̓���͊m�F�ł��Ă��܂��B
-- data-acd-id��ݒ肵���ꍇ�̊J����
-- data-acd-id��ݒ肵�Ă��Ȃ��ꍇ�̊J����
-- �f�t�H���g�̃I�[�v���ݒ�
+# 注意
+### １．以下の動作は確認できています。
+- data-acd-idを設定した場合の開閉動作
+- data-acd-idを設定していない場合の開閉動作
+- デフォルトのオープン設定
 
-### �Q�D���̃v���O�����ł́A�ȉ��̃v���p�e�B��ύX���܂��B
-- �g���K�[�ƂȂ�v�f�́Aoverflow �� hidden�ɂ��Ă��܂��B
-- �g���K�[�ƂȂ�v�f�́Aheight �� �����\������height���v�Z���A�l��ݒ肵�Ă��܂��B
+### ２．このプログラムでは、以下のプロパティを変更します。
+- トリガーとなる要素の、overflow ⇒ hiddenにしています。
+- トリガーとなる要素の、height ⇒ 初期表示時にheightを計算し、値を設定しています。
 
-### �R�DJavascript���S�҂ł��B
-�Ɩ���Java�͐G���Ă��܂����AJavascript�ł̃x�X�g�v���N�e�B�X�I�Ȑ݌v��A�R�[�h�L�q�͍l���ł��Ă��Ȃ��ł��B�B�B
+### 補足
+業務でJavaは触っていますが、Javascriptでのベストプラクティス的な設計や、コード記述は考慮できていないです。。。
 
-���ӌ��E���w�E��W���Ă܂��B
+ご意見・ご指摘募集してます。
 
-# �ۑ�
-- �G���[�������������菑���B
-- class�\���ł�����Ă݂�B
+# 課題
+- エラー処理をしっかり書く。
+- class構文でも作ってみる。
