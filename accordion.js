@@ -40,7 +40,7 @@ JsAcdMenu.defaultConf = {
 							// 要素の数が合わなければ、エラーを返して、処理を中断する
 							if(triggers.length != targets.length){
 								console.log("トリガーと開閉対象の要素数が合いません。");
-								return false;
+								//return false;
 							}
 							
 							let triggerId = '';

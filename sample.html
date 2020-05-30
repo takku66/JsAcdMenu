@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title>JsAcdMenu SamplePage!</title>
+	<style>
+		.js-acd_trigger {
+			background-color: blue;
+			color: white;
+			font-weight:bold;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		.js-acd_target {
+			background-color: skyBlue;
+			border-radius: 5px;
+		}
+		table{
+			border-collapse:collapse;
+		}
+		tr{
+			display: block;
+		}
+		td{
+			border: 1px black solid;
+			width: 100px;
+		}
+		th{
+			background-color: lightGreen;
+			border: 1px black solid;
+			width: 100px;s
+		}
+		
+	</style>
+	
+	<script src="./accordion.js"></script>
+</head>
+	<body>
+		<div class="js-acd_trigger">
+			サンプル
+		</div>
+		<div class="js-acd_target">
+			テスト
+		</div>
+		<ul>
+			<span class="js-acd_trigger">大リスト１</span>
+			<li class="js-acd_target">
+				<ul>
+					<li>
+						<span class="js-acd_trigger">リスト１</span>
+						<div class="js-acd_target">
+							リスト１－１
+						</div>
+					</li>
+					<li>
+						リスト１
+					</li>
+				</ul>
+			</li>
+			<span class="js-acd_trigger">大リスト２</span>
+			<li class="js-acd_target">
+				<ul>
+					<li>
+						<span class="js-acd_trigger">リスト２</span>
+						<div class="js-acd_target">
+							リスト２－１
+						</div>
+					</li>
+					<li>
+						リスト２
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<div>
+			<table>
+				<th>
+					ヘッダ１
+				</th>
+				<th>
+					ヘッダ２
+				</th>
+				<th>
+					ヘッダ３
+				</th>
+				<tr class="js-acd_trigger" data-acd-id="tr1" data-acd-multiple="true">
+					<td>
+						テーブル１
+					</td>
+					<td>
+						テーブル２
+					</td>
+					<td>
+						テーブル３
+					</td>
+				</tr>
+				<tr class="js-acd_target" data-acd-id="tr1">
+					<td>
+							テーブル１
+					</td>
+					<td>
+							テーブル２
+					</td>
+					<td>
+							テーブル３
+					</td>
+				</tr>
+				<tr>
+					<td>
+							テーブル１
+					</td>
+					<td>
+							テーブル２
+					</td>
+					<td>
+							テーブル３
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
